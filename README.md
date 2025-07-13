@@ -17,7 +17,7 @@ This project is a GUI application designed for ingesting, analyzing, and predict
 1.  Clone the repository:
 
     ```bash
-    git clone https://github.com/your-org/gigaleverage.git
+    git clone https://github.com/Gigaleverage/gigaleverage.git
     cd gigaleverage
     ```
 

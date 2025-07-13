@@ -8,7 +8,7 @@ edition = "2021"
 authors = ["Gigaleverage Team"]
 license = "MIT"
 description = "A modern app for time series data analysis and sentiment analysis"
-repository = "https://github.com/your-org/gigaleverage"
+repository = "https://github.com/Gigaleverage/gigaleverage"
 
 [workspace.dependencies]
 slint = "1.3"
