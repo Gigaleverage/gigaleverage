@@ -1,0 +1,25 @@
+[package]
+name = "gigaleverage-app"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "gigaleverage"
+path = "src/main.rs"
+
+[dependencies]
+slint = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+dirs = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+[build-dependencies]
+slint-build = "1.3"

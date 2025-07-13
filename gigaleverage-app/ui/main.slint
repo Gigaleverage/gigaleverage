@@ -1,0 +1,380 @@
+import { Button, LineEdit, ScrollView, VerticalBox, HorizontalBox, GroupBox } from "std-widgets.slint";
+
+export global Theme {
+    in-out property <color> background: #1a1a1a;
+    in-out property <color> primary: #61dafb;
+    in-out property <color> text-primary: #ffffff;
+    in-out property <color> text-secondary: #b0b0b0;
+    in-out property <color> surface: #2a2a2a;
+}
+
+export enum Screen {
+    Loading,
+    ApiKeySetup,
+    Intro,
+    Main,
+    Settings,
+}
+
+export component LoadingScreen inherits Rectangle {
+    background: Theme.background;
+    
+    property <float> pulse-scale: 1.0;
+    
+    // Pulse animation
+    animate pulse-scale {
+        duration: 1.5s;
+        easing: ease-in-out;
+        iteration-count: -1;
+    }
+    
+    VerticalBox {
+        alignment: center;
+        HorizontalBox {
+            alignment: center;
+
+            VerticalBox {
+                alignment: center;
+                spacing: 40px;
+                
+                Rectangle {
+                    width: 200px;
+                    height: 200px;
+                    
+                    Image {
+                        source: @image-url("../assets/giga-logo-icon.svg");
+                        width: 100%;
+                        height: 100%;
+                        image-fit: contain;
+                        
+                        // Apply pulse animation
+                        animate opacity {
+                            duration: 1.5s;
+                            easing: ease-in-out;
+                            iteration-count: -1;
+                        }
+                    }
+                }
+                
+                VerticalBox {
+                    spacing: 16px;
+                    
+                    Text {
+                        text: "Gigaleverage";
+                        font-size: 28px;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                        horizontal-alignment: center;
+                    }
+                    
+                    Text {
+                        text: "Loading...";
+                        font-size: 14px;
+                        color: Theme.primary;
+                        horizontal-alignment: center;
+                        
+                        animate opacity {
+                            duration: 1s;
+                            easing: ease-in-out;
+                            iteration-count: -1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component ApiKeyInput inherits Rectangle {
+    callback api-key-submitted(string);
+    property <string> api-key;
+    
+    background: Theme.background;
+    
+    VerticalBox {
+        padding: 32px;
+        spacing: 24px;
+        
+        Text {
+            text: "Welcome to Gigaleverage";
+            font-size: 28px;
+            font-weight: 600;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+        
+        Text {
+            text: "Enter your OpenAI API key to get started";
+            font-size: 16px;
+            color: Theme.text-secondary;
+            horizontal-alignment: center;
+        }
+        
+        LineEdit {
+            placeholder-text: "sk-...";
+            font-size: 14px;
+            text <=> api-key;
+            min-height: 48px;
+        }
+        
+        HorizontalBox {
+            spacing: 12px;
+            
+            Button {
+                text: "Skip for now";
+                min-height: 48px;
+                
+                clicked => {
+                    api-key-submitted("");
+                }
+            }
+            
+            Button {
+                text: "Continue";
+                min-height: 48px;
+                
+                clicked => {
+                    api-key-submitted(api-key);
+                }
+            }
+        }
+    }
+}
+
+export component IntroScreen inherits Rectangle {
+    callback continue-clicked();
+    
+    background: Theme.background;
+    
+    VerticalBox {
+        padding: 32px;
+        spacing: 32px;
+        
+        Text {
+            text: "Welcome to Gigaleverage";
+            font-size: 32px;
+            font-weight: 700;
+            color: Theme.text-primary;
+            horizontal-alignment: center;
+        }
+        
+        ScrollView {
+            VerticalBox {
+                spacing: 24px;
+                
+                GroupBox {
+                    title: "🔍 Time Series Analysis";
+                    
+                    Text {
+                        text: "Ingest and analyze time series data including prices, weather, and telemetry data to understand patterns and trends.";
+                        font-size: 14px;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                }
+                
+                GroupBox {
+                    title: "💭 Sentiment Analysis";
+                    
+                    Text {
+                        text: "Analyze sentiment in time series data to predict future values and market movements with AI-powered insights.";
+                        font-size: 14px;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                }
+                
+                GroupBox {
+                    title: "🚀 Prediction Engine";
+                    
+                    Text {
+                        text: "Leverage advanced machine learning models to predict the next value in your time series data with high accuracy.";
+                        font-size: 14px;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+        
+        Button {
+            text: "Get Started";
+            min-height: 48px;
+            
+            clicked => {
+                continue-clicked();
+            }
+        }
+    }
+}
+
+export component SettingsScreen inherits Rectangle {
+    callback api-key-changed(string);
+    callback back-clicked();
+    
+    in property <string> api-key-value;
+    
+    background: Theme.background;
+    
+    VerticalBox {
+        padding: 32px;
+        spacing: 24px;
+        
+        HorizontalBox {
+            spacing: 12px;
+            
+            Button {
+                text: "← Back";
+                min-height: 40px;
+                
+                clicked => {
+                    back-clicked();
+                }
+            }
+            
+            Text {
+                text: "Settings";
+                font-size: 24px;
+                font-weight: 600;
+                color: Theme.text-primary;
+                vertical-alignment: center;
+            }
+        }
+        
+        GroupBox {
+            title: "API Configuration";
+            
+            VerticalBox {
+                spacing: 16px;
+                
+                Text {
+                    text: "OpenAI API Key";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                }
+                
+                LineEdit {
+                    placeholder-text: "sk-...";
+                    font-size: 14px;
+                    text: api-key-value;
+                    min-height: 48px;
+                    
+                    edited => {
+                        api-key-changed(self.text);
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component MainScreen inherits Rectangle {
+    callback settings-clicked();
+    
+    background: Theme.background;
+    
+    VerticalBox {
+        padding: 32px;
+        spacing: 24px;
+        
+        HorizontalBox {
+            spacing: 12px;
+            
+            Text {
+                text: "Gigaleverage";
+                font-size: 24px;
+                font-weight: 600;
+                color: Theme.text-primary;
+                vertical-alignment: center;
+            }
+            
+            Rectangle {
+                // Spacer
+            }
+            
+            Button {
+                text: "⚙️ Settings";
+                min-height: 40px;
+                
+                clicked => {
+                    settings-clicked();
+                }
+            }
+        }
+        
+        GroupBox {
+            title: "Dashboard";
+            
+            VerticalBox {
+                spacing: 16px;
+                
+                Text {
+                    text: "Welcome to your time series analysis dashboard. This is where you'll manage your data sources and view predictions.";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                    wrap: word-wrap;
+                }
+                
+                Text {
+                    text: "More features coming soon...";
+                    font-size: 12px;
+                    color: Theme.primary;
+                }
+            }
+        }
+    }
+}
+
+export component App inherits Window {
+    title: "Gigaleverage";
+    background: Theme.background;
+    min-width: 800px;
+    min-height: 600px;
+    
+    property <Screen> current-screen: Screen.Loading;
+    property <string> api-key: "";
+    
+    // Timer to auto-transition from loading
+    Timer {
+        interval: 10s;
+        running: current-screen == Screen.Loading;
+        
+        triggered => {
+            current-screen = api-key == "" ? Screen.ApiKeySetup : Screen.Main;
+        }
+    }
+    
+    if current-screen == Screen.Loading: LoadingScreen {
+    }
+    
+    if current-screen == Screen.ApiKeySetup: ApiKeyInput {
+        api-key-submitted(key) => {
+            api-key = key;
+            current-screen = Screen.Intro;
+        }
+    }
+    
+    if current-screen == Screen.Intro: IntroScreen {
+        continue-clicked => {
+            current-screen = Screen.Main;
+        }
+    }
+    
+    if current-screen == Screen.Main: MainScreen {
+        settings-clicked => {
+            current-screen = Screen.Settings;
+        }
+    }
+    
+    if current-screen == Screen.Settings: SettingsScreen {
+        api-key-value: api-key;
+        
+        api-key-changed(key) => {
+            api-key = key;
+        }
+        
+        back-clicked => {
+            current-screen = Screen.Main;
+        }
+    }
+} 
