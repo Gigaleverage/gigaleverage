@@ -3,9 +3,27 @@ import { Button, LineEdit, ScrollView, VerticalBox, HorizontalBox, GroupBox } fr
 export global Theme {
     in-out property <color> background: #1a1a1a;
     in-out property <color> primary: #61dafb;
+    in-out property <color> accent: #8ce99a; // light green
     in-out property <color> text-primary: #ffffff;
     in-out property <color> text-secondary: #b0b0b0;
     in-out property <color> surface: #2a2a2a;
+}
+
+export struct Provider {
+    id: string,
+    name: string,
+    logo: image,
+}
+
+export struct DataStream {
+    id: string,
+    name: string,
+}
+
+export struct Leverage {
+    id: string,
+    provider: Provider,
+    data_stream: DataStream,
 }
 
 export enum Screen {
@@ -270,55 +288,194 @@ export component SettingsScreen inherits Rectangle {
 
 export component MainScreen inherits Rectangle {
     callback settings-clicked();
+    callback provider-selected(string);
+    callback create-leverage(string, string, string);
+
+    in property <[Leverage]> leverages;
+    in property <[Provider]> providers;
+    in property <[DataStream]> data_streams;
     
+    in-out property <string> selected_provider_id: "";
+    in-out property <string> selected_data_stream_id: "";
+    in-out property <string> selected_data_stream_name: "";
+
     background: Theme.background;
     
-    VerticalBox {
-        padding: 32px;
-        spacing: 24px;
-        
-        HorizontalBox {
-            spacing: 12px;
+    HorizontalBox {
+        // Sidebar
+        Rectangle {
+            width: 250px;
+            background: Theme.surface;
             
-            Text {
-                text: "Gigaleverage";
-                font-size: 24px;
-                font-weight: 600;
-                color: Theme.text-primary;
-                vertical-alignment: center;
-            }
-            
-            Rectangle {
-                // Spacer
-            }
-            
-            Button {
-                text: "⚙️ Settings";
-                min-height: 40px;
-                
-                clicked => {
-                    settings-clicked();
+            VerticalBox {
+                padding: 10px;
+                spacing: 10px;
+
+                Text {
+                    text: "Leverages";
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: Theme.accent;
+                    horizontal-alignment: center;
+                }
+
+                ScrollView {
+                    VerticalBox {
+                        spacing: 5px;
+                        for leverage in leverages: Rectangle {
+                            padding: 10px;
+                            border-radius: 5px;
+                            background: Theme.background;
+                            border-width: 1px;
+                            border-color: Theme.surface;
+
+                            VerticalBox {
+                                spacing: 5px;
+                                Text {
+                                    text: "Leverage #" + leverage.id;
+                                    font-weight: 700;
+                                    color: Theme.text-primary;
+                                    font-size: 12px;
+                                }
+                                Text { 
+                                    text: "Provider: " + leverage.provider.name;
+                                    color: Theme.text-secondary;
+                                    font-size: 10px;
+                                }
+                                Text { 
+                                    text: "Data: " + leverage.data_stream.name;
+                                    color: Theme.text-secondary;
+                                    font-size: 10px;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        
-        GroupBox {
-            title: "Dashboard";
+
+        // Main Content
+        VerticalBox {
+            padding: 32px;
+            spacing: 24px;
             
-            VerticalBox {
-                spacing: 16px;
+            HorizontalBox {
+                spacing: 12px;
                 
                 Text {
-                    text: "Welcome to your time series analysis dashboard. This is where you'll manage your data sources and view predictions.";
-                    font-size: 14px;
-                    color: Theme.text-secondary;
-                    wrap: word-wrap;
+                    text: "Gigaleverage";
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: Theme.text-primary;
+                    vertical-alignment: center;
                 }
                 
-                Text {
-                    text: "More features coming soon...";
-                    font-size: 12px;
-                    color: Theme.primary;
+                Rectangle {
+                    // Spacer
+                }
+                
+                Button {
+                    text: "⚙️ Settings";
+                    min-height: 40px;
+                    
+                    clicked => {
+                        settings-clicked();
+                    }
+                }
+            }
+            
+            GroupBox {
+                title: "Create Leverage";
+                
+                VerticalBox {
+                    spacing: 16px;
+                    
+                    Text {
+                        text: "Select a Data Provider";
+                        font-weight: 600;
+                        color: Theme.text-primary;
+                    }
+
+                    HorizontalBox {
+                        spacing: 10px;
+                        for provider in providers: Rectangle {
+                            border-width: 2px;
+                            border-color: selected_provider_id == provider.id ? Theme.accent : Theme.surface;
+                            border-radius: 5px;
+                            background: Theme.surface;
+                            
+                            TouchArea {
+                                clicked => {
+                                    selected_provider_id = provider.id;
+                                    provider-selected(provider.id);
+                                }
+                            }
+
+                            HorizontalBox {
+                                padding: 10px;
+                                spacing: 10px;
+                                Image { 
+                                    source: provider.logo; 
+                                    width: 40px; 
+                                    height: 40px;
+                                    image-fit: contain;
+                                }
+                                Text {
+                                    text: provider.name;
+                                    vertical-alignment: center;
+                                    color: Theme.text-primary;
+                                }
+                            }
+                        }
+                    }
+
+                    if selected_provider_id != "" : VerticalBox {
+                        spacing: 10px;
+
+                        Text {
+                            text: "Select Data Stream";
+                            font-weight: 600;
+                            color: Theme.text-primary;
+                        }
+
+                        ScrollView {
+                            height: 150px;
+                            VerticalBox {
+                                spacing: 5px;
+                                for stream in data_streams: Rectangle {
+                                    border-width: 1px;
+                                    border-color: selected_data_stream_id == stream.id ? Theme.accent : Theme.surface;
+                                    border-radius: 5px;
+                                    background: Theme.surface;
+                                    
+                                    TouchArea {
+                                        clicked => {
+                                            selected_data_stream_id = stream.id;
+                                            selected_data_stream_name = stream.name;
+                                        }
+                                    }
+
+                                    Text {
+                                        text: stream.name;
+                                        color: Theme.text-primary;
+                                        padding: 10px;
+                                    }
+                                }
+                            }
+                        }
+
+                        Button {
+                            text: "Create Leverage";
+                            min-height: 48px;
+                            enabled: selected_data_stream_id != "";
+                            clicked => {
+                                create-leverage(selected_provider_id, selected_data_stream_id, selected_data_stream_name);
+                                selected_provider_id = "";
+                                selected_data_stream_id = "";
+                                selected_data_stream_name = "";
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -334,6 +491,13 @@ export component App inherits Window {
     property <Screen> current-screen: Screen.Loading;
     property <string> api-key: "";
     
+    in-out property <[Leverage]> leverages: [];
+    in-out property <[Provider]> providers: [];
+    in-out property <[DataStream]> data_streams: [];
+
+    callback create-leverage(string, string, string);
+    callback provider-selected(string);
+
     // Timer to auto-transition from loading
     Timer {
         interval: 10s;
@@ -361,8 +525,18 @@ export component App inherits Window {
     }
     
     if current-screen == Screen.Main: MainScreen {
+        leverages: root.leverages;
+        providers: root.providers;
+        data_streams: root.data_streams;
+
         settings-clicked => {
             current-screen = Screen.Settings;
+        }
+        provider-selected(provider_id) => {
+            root.provider-selected(provider_id);
+        }
+        create-leverage(provider_id, data_stream_id, data_stream_name) => {
+            root.create-leverage(provider_id, data_stream_id, data_stream_name);
         }
     }
     
