@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use slint::Model;
 use std::fs;
 use std::path::PathBuf;
+use std::time::Duration;
 use uuid::Uuid;
 
 slint::include_modules!();
@@ -69,10 +70,7 @@ impl AppState {
     }
 }
 
-const COINGECKO_LOGO_PATH: &str = concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/assets/images/coingecko-logo.png"
-);
+const COINGECKO_LOGO_PATH: &str = "assets/images/coingecko-logo.png";
 
 fn get_providers() -> Vec<Provider> {
     vec![Provider {
@@ -115,6 +113,13 @@ fn main() -> Result<()> {
     let leverages: Vec<Leverage> = Vec::new();
     let leverages_model = std::rc::Rc::new(slint::VecModel::from(leverages));
     ui.set_leverages(leverages_model.clone().into());
+
+    // Transition from loading screen to API key setup after a short delay
+    let ui_weak = ui.as_weak();
+    slint::Timer::single_shot(Duration::from_secs(2), move || {
+        let ui = ui_weak.upgrade().unwrap();
+        ui.set_current_screen(Screen::ApiKeySetup.into());
+    });
 
     // Handle provider selection
     let ui_weak = ui.as_weak();

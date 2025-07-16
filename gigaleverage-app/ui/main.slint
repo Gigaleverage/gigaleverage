@@ -606,7 +606,7 @@ export component App inherits Window {
     background: Theme.background;
     min-width: 1000px;
     min-height: 700px;
-    property <Screen> current-screen: Screen.Loading;
+    in-out property <Screen> current-screen: Screen.Loading;
     property <string> api-key: "";
     in-out property <[Leverage]> leverages: [];
     in-out property <[Provider]> providers: [];
