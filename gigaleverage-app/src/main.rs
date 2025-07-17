@@ -6,6 +6,39 @@ use std::path::PathBuf;
 use std::time::Duration;
 use uuid::Uuid;
 
+// On macOS Slint 1.4+ defaults to the Regular activation policy, which makes
+// Mission Control briefly switch to another Space when launching our app
+// from the terminal. Set the activation policy back to `Accessory` prior to
+// creating any Slint windows to keep the window in the current desktop Space.
+#[cfg(target_os = "macos")]
+fn install_macos_activation_policy() {
+    // Build a customised Winit backend that requests the `Accessory` policy.
+    // This roughly matches Slint ≤ 1.3 behaviour and avoids the Spaces
+    // round-trip/flicker when starting the application from a shell.
+    use i_slint_backend_winit::Backend;
+    use slint::platform::set_platform;
+    use winit::platform::macos::{ActivationPolicy, EventLoopBuilderExtMacOS};
+
+    // SAFETY: `set_platform` must be called exactly once and before any other
+    // Slint UI types are instantiated. We call it at the very start of `main`
+    // and use `expect` to crash early if something goes wrong.
+    // Construct a custom winit `EventLoopBuilder` so we can tweak macOS-specific
+    // options (namely the activation policy) before Slint turns it into an
+    // event loop.
+    let mut elb = winit::event_loop::EventLoop::<i_slint_backend_winit::SlintEvent>::with_user_event();
+    elb.with_activation_policy(ActivationPolicy::Accessory);
+
+    let backend = Backend::builder()
+        .with_event_loop_builder(elb)
+        .build()
+        .expect("Failed to build Slint winit backend with Accessory policy");
+
+    set_platform(Box::new(backend)).expect("Failed to install custom Slint backend");
+}
+
+#[cfg(not(target_os = "macos"))]
+fn install_macos_activation_policy() {}
+
 slint::include_modules!();
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -98,6 +131,10 @@ fn get_data_streams_for_provider(provider_id: &str) -> Vec<DataStream> {
 }
 
 fn main() -> Result<()> {
+    // Ensure we initialise the backend with the desired activation policy *before*
+    // creating any Slint windows or components.
+    install_macos_activation_policy();
+
     // Initialize application state
     let _app_state = AppState::new()?;
 

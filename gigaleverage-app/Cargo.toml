@@ -12,7 +12,11 @@ name = "gigaleverage"
 path = "src/main.rs"
 
 [dependencies]
-slint = "1.6.0"
+slint = "1.12.1"
+# Ensure we can customize the macOS activation policy via the Winit backend.
+i-slint-backend-winit = "=1.12.1"
+# Needed only for the macOS-specific `EventLoopBuilderExtMacOS` trait and `ActivationPolicy` enum.
+winit = "0.30.2"
 tokio = { workspace = true }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
