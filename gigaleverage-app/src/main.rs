@@ -103,7 +103,7 @@ impl AppState {
     }
 }
 
-const COINGECKO_LOGO_PATH: &str = "assets/images/coingecko-logo.png";
+const COINGECKO_LOGO_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/images/coingecko-logo.png");
 
 fn get_providers() -> Vec<Provider> {
     vec![Provider {
