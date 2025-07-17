@@ -21,10 +21,10 @@ tokio = { workspace = true }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 reqwest = { workspace = true }
-dirs = "5.0.1"
+dirs = "6.0"
 anyhow = "1.0.86"
 thiserror = { workspace = true }
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
 
 [build-dependencies]
-slint-build = "1.6.0"
+slint-build = "1.12.1"
