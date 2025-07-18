@@ -107,12 +107,15 @@ export component LoadingScreen inherits Rectangle {
 }
 
 export component ApiKeyInput inherits Rectangle {
-    callback api-key-submitted(string);
-    property <string> api-key;
+    callback api-keys-submitted(string, string);
+    property <string> openai-api-key;
+    property <string> coingecko-api-key;
     background: Theme.background;
     VerticalBox {
         padding: 32px;
         spacing: 24px;
+
+        // Header
         Text {
             text: "🔑 Welcome to Gigaleverage";
             font-size: 28px;
@@ -121,27 +124,92 @@ export component ApiKeyInput inherits Rectangle {
             horizontal-alignment: center;
         }
 
+        // Sub-header
         Text {
-            text: "Enter your OpenAI API key to get started";
+            text: "Enter your API keys to get started";
             font-size: 16px;
             color: Theme.text-secondary;
             horizontal-alignment: center;
         }
 
-        LineEdit {
-            placeholder-text: "sk-...";
-            font-size: 14px;
-            text <=> api-key;
-            min-height: 48px;
+        // OpenAI Key Field
+        VerticalBox {
+            spacing: 8px;
+            HorizontalBox {
+                spacing: 8px;
+                Image {
+                    source: @image-url("../assets/images/openai-logo.png");
+                    width: 24px;
+                    height: 24px;
+                    image-fit: contain;
+                }
+
+                Text {
+                    text: "OpenAI API Key";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+
+            LineEdit {
+                placeholder-text: "sk-...";
+                font-size: 14px;
+                text <=> openai-api-key;
+                min-height: 48px;
+            }
+
+            Text {
+                text: "Get key at https://platform.openai.com/account/api-keys → Create new secret key";
+                font-size: 12px;
+                wrap: word-wrap;
+                color: Theme.text-secondary;
+            }
         }
 
+        // CoinGecko Key Field
+        VerticalBox {
+            spacing: 8px;
+            HorizontalBox {
+                spacing: 8px;
+                Image {
+                    source: @image-url("../assets/images/coingecko-logo.png");
+                    width: 24px;
+                    height: 24px;
+                    image-fit: contain;
+                }
+
+                Text {
+                    text: "CoinGecko API Key";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+
+            LineEdit {
+                placeholder-text: "••••••••";
+                font-size: 14px;
+                text <=> coingecko-api-key;
+                min-height: 48px;
+            }
+
+            Text {
+                text: "Generate key: log in at https://www.coingecko.com → API → Generate Key";
+                font-size: 12px;
+                wrap: word-wrap;
+                color: Theme.text-secondary;
+            }
+        }
+
+        // Action buttons
         HorizontalBox {
             spacing: 12px;
             Button {
                 text: "⏭️ Skip for now";
                 min-height: 48px;
                 clicked => {
-                    api-key-submitted("");
+                    api-keys-submitted("", "");
                 }
             }
 
@@ -149,7 +217,7 @@ export component ApiKeyInput inherits Rectangle {
                 text: "✅ Continue";
                 min-height: 48px;
                 clicked => {
-                    api-key-submitted(api-key);
+                    api-keys-submitted(openai-api-key, coingecko-api-key);
                 }
             }
         }
@@ -608,6 +676,7 @@ export component App inherits Window {
     min-height: 700px;
     in-out property <Screen> current-screen: Screen.Loading;
     property <string> api-key: "";
+    property <string> coingecko-api-key: "";
     in-out property <[Leverage]> leverages: [];
     in-out property <[Provider]> providers: [];
     in-out property <[DataStream]> data_streams: [];
@@ -620,8 +689,9 @@ export component App inherits Window {
 
     if current-screen == Screen.Loading: LoadingScreen { }
     if current-screen == Screen.ApiKeySetup: ApiKeyInput {
-        api-key-submitted(key) => {
-            api-key = key;
+        api-keys-submitted(oa_key, cg_key) => {
+            api-key = oa_key;
+            coingecko-api-key = cg_key;
             current-screen = Screen.Intro;
         }
     }
