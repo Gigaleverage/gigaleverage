@@ -6,34 +6,15 @@ use std::path::PathBuf;
 use std::time::Duration;
 use uuid::Uuid;
 
-// On macOS Slint 1.4+ defaults to the Regular activation policy, which makes
-// Mission Control briefly switch to another Space when launching our app
-// from the terminal. Set the activation policy back to `Accessory` prior to
-// creating any Slint windows to keep the window in the current desktop Space.
+// Previously we overrode the macOS activation policy to `Accessory` to avoid a brief
+// desktop switch/flicker when launching the application from a terminal. Unfortunately
+// this also prevents the window from entering the standard macOS full-screen mode that
+// lives in its own Space. We now keep the default `Regular` activation policy so the
+// green traffic-light button behaves like any other macOS app (opens a new desktop
+// Space in full-screen/Split-View).
 #[cfg(target_os = "macos")]
 fn install_macos_activation_policy() {
-    // Build a customised Winit backend that requests the `Accessory` policy.
-    // This roughly matches Slint ≤ 1.3 behaviour and avoids the Spaces
-    // round-trip/flicker when starting the application from a shell.
-    use i_slint_backend_winit::Backend;
-    use slint::platform::set_platform;
-    use winit::platform::macos::{ActivationPolicy, EventLoopBuilderExtMacOS};
-
-    // SAFETY: `set_platform` must be called exactly once and before any other
-    // Slint UI types are instantiated. We call it at the very start of `main`
-    // and use `expect` to crash early if something goes wrong.
-    // Construct a custom winit `EventLoopBuilder` so we can tweak macOS-specific
-    // options (namely the activation policy) before Slint turns it into an
-    // event loop.
-    let mut elb = winit::event_loop::EventLoop::<i_slint_backend_winit::SlintEvent>::with_user_event();
-    elb.with_activation_policy(ActivationPolicy::Accessory);
-
-    let backend = Backend::builder()
-        .with_event_loop_builder(elb)
-        .build()
-        .expect("Failed to build Slint winit backend with Accessory policy");
-
-    set_platform(Box::new(backend)).expect("Failed to install custom Slint backend");
+    // Intentionally left empty – we rely on Slint's default `Regular` activation policy.
 }
 
 #[cfg(not(target_os = "macos"))]
