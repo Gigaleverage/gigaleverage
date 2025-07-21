@@ -330,56 +330,171 @@ export component ApiKeyInput inherits Rectangle {
 export component IntroScreen inherits Rectangle {
     callback continue-clicked();
     background: Theme.background;
-    VerticalBox {
-        padding: 32px;
-        spacing: 32px;
-        Text {
-            text: "🚀 Welcome to Gigaleverage";
-            font-size: 32px;
-            font-weight: 700;
-            color: Theme.text-primary;
-            horizontal-alignment: center;
-        }
 
-        ScrollView {
+    ScrollView {
+        // Center the entire page content horizontally
+        HorizontalBox {
+            alignment: center;
+            
+            // Main wrapper keeps everything nicely grouped and vertically spaced
             VerticalBox {
-                spacing: 24px;
-                GroupBox {
-                    title: "🔍 Time Series Analysis";
+                padding: 48px;
+                spacing: 64px;
+
+                // ─── Hero ──────────────────────────────────────────────
+                VerticalBox {
+                    alignment: center;
+                    spacing: 24px;
+                    width: 100%;
+
+                    // ─── Hero Logo Center ───────────
+                    HorizontalBox {
+                        alignment: center;
+                        width: 100%;
+
+                        // App logo inside a subtle circle
+                        Rectangle {
+                            width: 96px;
+                            height: 96px;
+                            border-radius: 48px;
+                            background: Theme.surface-hover;
+                            Image {
+                                source: @image-url("../assets/images/giga-logo-icon.svg");
+                                width: 60px;
+                                height: 60px;
+                                image-fit: contain;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+
                     Text {
-                        text: "Ingest and analyze time series data including prices, weather, and telemetry data to understand patterns and trends.";
-                        font-size: 14px;
+                        text: "Gigaleverage";
+                        font-size: 40px;
+                        font-weight: 800;
+                        color: Theme.text-primary;
+                        horizontal-alignment: center;
+                    }
+
+                    Text {
+                        text: "AI-powered time-series insights & predictions";
+                        font-size: 16px;
                         color: Theme.text-secondary;
-                        wrap: word-wrap;
+                        horizontal-alignment: center;
                     }
                 }
 
-                GroupBox {
-                    title: "💭 Sentiment Analysis";
-                    Text {
-                        text: "Analyze sentiment in time series data to predict future values and market movements with AI-powered insights.";
-                        font-size: 14px;
-                        color: Theme.text-secondary;
-                        wrap: word-wrap;
+                // ─── Feature Cards ────────────────────────────────────
+                HorizontalBox {
+                    alignment: center;
+                    spacing: 32px;
+
+                    // Card 1
+                    Rectangle {
+                        width: 260px;
+                        border-radius: 18px;
+                        background: Theme.surface;
+                        border-width: 1px;
+                        border-color: Theme.surface-hover;
+                        VerticalBox {
+                            padding: 24px;
+                            spacing: 16px;
+                            alignment: start;
+                            Text {
+                                text: "📊";
+                                font-size: 28px;
+                            }
+
+                            Text {
+                                text: "Time Series Analysis";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+
+                            Text {
+                                text: "Visualize and explore complex time-series data to uncover patterns and trends.";
+                                font-size: 13px;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+
+                    // Card 2
+                    Rectangle {
+                        width: 260px;
+                        border-radius: 18px;
+                        background: Theme.surface;
+                        border-width: 1px;
+                        border-color: Theme.surface-hover;
+                        VerticalBox {
+                            padding: 24px;
+                            spacing: 16px;
+                            alignment: start;
+                            Text {
+                                text: "🧠";
+                                font-size: 28px;
+                            }
+
+                            Text {
+                                text: "AI-Powered Sentiment";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+
+                            Text {
+                                text: "Gauge market mood with NLP-driven sentiment analysis for smarter decisions.";
+                                font-size: 13px;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+
+                    // Card 3
+                    Rectangle {
+                        width: 260px;
+                        border-radius: 18px;
+                        background: Theme.surface;
+                        border-width: 1px;
+                        border-color: Theme.surface-hover;
+                        VerticalBox {
+                            padding: 24px;
+                            spacing: 16px;
+                            alignment: start;
+                            Text {
+                                text: "🚀";
+                                font-size: 28px;
+                            }
+
+                            Text {
+                                text: "Prediction Engine";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+
+                            Text {
+                                text: "Deploy state-of-the-art models to forecast future values with high precision.";
+                                font-size: 13px;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
                     }
                 }
 
-                GroupBox {
-                    title: "🚀 Prediction Engine";
-                    Text {
-                        text: "Leverage advanced machine learning models to predict the next value in your time series data with high accuracy.";
-                        font-size: 14px;
-                        color: Theme.text-secondary;
-                        wrap: word-wrap;
+                // ─── Call-to-Action ───────────────────────────────────
+                RoundedButton {
+                    text: "🎯 Get Started";
+                    min-width: 200px;
+                    clicked => {
+                        continue-clicked();
                     }
                 }
-            }
-        }
-
-        RoundedButton {
-            text: "🎯 Get Started";
-            clicked => {
-                continue-clicked();
             }
         }
     }
