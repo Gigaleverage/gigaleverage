@@ -16,6 +16,12 @@ export global Theme {
     in-out property <color> surface-hover: #2a2a2a;
     in-out property <color> danger: #ff6b6b;
     in-out property <color> warning: #ffd43b;
+    // Added for modern white-ish controls
+    in-out property <color> button-background: #ffffff;
+    in-out property <color> button-background-hover: #e8e8e8;
+    in-out property <color> button-text: #0f0f0f;
+    // Unified corner radius for buttons & inputs
+    in-out property <length> control-radius: 10px;
 }
 
 export struct Provider {
@@ -41,6 +47,85 @@ export enum Screen {
     Intro,
     Main,
     Settings,
+}
+
+// Sleek, rounded primary button used across the UI
+export component RoundedButton inherits Rectangle {
+    in property <string> text;
+    in property <bool> enabled: true;
+
+    height: 48px;
+    border-radius: Theme.control-radius;
+    background: enabled ? Theme.button-background : Theme.surface-hover;
+    opacity: enabled ? 1.0 : 0.5;
+
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            if enabled {
+                clicked();
+            }
+        }
+    }
+
+    // Hover / press feedback
+    states [
+        hover when ta.has-hover && enabled: {
+            background: Theme.button-background-hover;
+        }
+        pressed when ta.pressed && enabled: {
+            background: Theme.accent;
+        }
+    ]
+
+    animate background {
+        duration: 150ms;
+        easing: ease-in-out;
+    }
+
+    Text {
+        text: parent.text;
+        color: Theme.button-text;
+        font-weight: 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    callback clicked();
+}
+
+// Rounded input field with extra padding
+export component RoundedLineEdit inherits Rectangle {
+    in-out property <string> text: "";
+    in property <string> placeholder: "";
+
+    // Forward the underlying LineEdit edited() callback so callers can react
+    callback edited(string);
+
+    height: 40px;
+    border-radius: Theme.control-radius;
+    background: Theme.surface-hover;
+    border-width: 1px;
+    border-color: le.has-focus ? Theme.primary : Theme.surface-hover;
+
+    animate border-color {
+        duration: 150ms;
+        easing: ease-in-out;
+    }
+
+    // Internal text field
+    le := LineEdit {
+        x: 10px;
+        y: 0px;
+        width: parent.width - 20px;
+        height: parent.height;
+        placeholder-text: parent.placeholder;
+        font-size: 14px;
+        text <=> parent.text;
+        edited => {
+            parent.edited(self.text);
+        }
+    }
 }
 
 export component LoadingScreen inherits Rectangle {
@@ -111,30 +196,36 @@ export component ApiKeyInput inherits Rectangle {
     property <string> openai-api-key;
     property <string> coingecko-api-key;
     background: Theme.background;
-    VerticalBox {
-        padding: 32px;
-        spacing: 24px;
-
-        // Header
-        Text {
-            text: "🔑 Welcome to Gigaleverage";
-            font-size: 28px;
-            font-weight: 600;
-            color: Theme.text-primary;
-            horizontal-alignment: center;
-        }
-
-        // Sub-header
-        Text {
-            text: "Enter your API keys to get started";
-            font-size: 16px;
-            color: Theme.text-secondary;
-            horizontal-alignment: center;
-        }
-
-        // OpenAI Key Field
+    HorizontalBox {
+        alignment: center;
         VerticalBox {
+            max-width: 550px;
+            padding: 32px;
             spacing: 8px;
+
+            // Header
+            Text {
+                text: "🔑 Welcome to Gigaleverage";
+                font-size: 28px;
+                font-weight: 600;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+            }
+
+            // Sub-header
+            Text {
+                text: "Enter your API keys to get started";
+                font-size: 16px;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+            }
+
+            // Spacer between header and form fields
+            Rectangle {
+                height: 16px;
+            }
+
+            // OpenAI Key Field
             HorizontalBox {
                 spacing: 8px;
                 Image {
@@ -152,11 +243,9 @@ export component ApiKeyInput inherits Rectangle {
                 }
             }
 
-            LineEdit {
-                placeholder-text: "sk-...";
-                font-size: 14px;
+            RoundedLineEdit {
+                placeholder: "SK-...";
                 text <=> openai-api-key;
-                min-height: 48px;
             }
 
             Text {
@@ -165,11 +254,13 @@ export component ApiKeyInput inherits Rectangle {
                 wrap: word-wrap;
                 color: Theme.text-secondary;
             }
-        }
 
-        // CoinGecko Key Field
-        VerticalBox {
-            spacing: 8px;
+            // Spacer between form fields
+            Rectangle {
+                height: 16px;
+            }
+
+            // CoinGecko Key Field
             HorizontalBox {
                 spacing: 8px;
                 Image {
@@ -187,11 +278,9 @@ export component ApiKeyInput inherits Rectangle {
                 }
             }
 
-            LineEdit {
-                placeholder-text: "••••••••";
-                font-size: 14px;
+            RoundedLineEdit {
+                placeholder: "••••••••";
                 text <=> coingecko-api-key;
-                min-height: 48px;
             }
 
             Text {
@@ -200,24 +289,31 @@ export component ApiKeyInput inherits Rectangle {
                 wrap: word-wrap;
                 color: Theme.text-secondary;
             }
-        }
 
-        // Action buttons
-        HorizontalBox {
-            spacing: 12px;
-            Button {
-                text: "⏭️ Skip for now";
-                min-height: 48px;
-                clicked => {
-                    api-keys-submitted("", "");
-                }
+            // Spacer before action buttons
+            Rectangle {
+                min-height: 24px;
             }
+            
+            // Action buttons
+            HorizontalBox {
+                spacing: 24px;
+                alignment: center;
 
-            Button {
-                text: "✅ Continue";
-                min-height: 48px;
-                clicked => {
-                    api-keys-submitted(openai-api-key, coingecko-api-key);
+                RoundedButton {
+                    text: "⏭️ Skip for now";
+                    min-width: 150px;
+                    clicked => {
+                        api-keys-submitted("", "");
+                    }
+                }
+
+                RoundedButton {
+                    text: "✅ Continue";
+                    min-width: 150px;
+                    clicked => {
+                        api-keys-submitted(openai-api-key, coingecko-api-key);
+                    }
                 }
             }
         }
@@ -273,9 +369,8 @@ export component IntroScreen inherits Rectangle {
             }
         }
 
-        Button {
+        RoundedButton {
             text: "🎯 Get Started";
-            min-height: 48px;
             clicked => {
                 continue-clicked();
             }
@@ -293,9 +388,8 @@ export component SettingsScreen inherits Rectangle {
         spacing: 24px;
         HorizontalBox {
             spacing: 12px;
-            Button {
+            RoundedButton {
                 text: "⬅️ Back";
-                min-height: 40px;
                 clicked => {
                     back-clicked();
                 }
@@ -320,11 +414,9 @@ export component SettingsScreen inherits Rectangle {
                     color: Theme.text-secondary;
                 }
 
-                LineEdit {
-                    placeholder-text: "sk-...";
-                    font-size: 14px;
+                RoundedLineEdit {
+                    placeholder: "sk-...";
                     text: api-key-value;
-                    min-height: 48px;
                     edited => {
                         api-key-changed(self.text);
                     }
@@ -506,9 +598,8 @@ export component MainScreen inherits Rectangle {
                     // Spacer
                 }
 
-                Button {
+                RoundedButton {
                     text: "⚙️ Settings";
-                    min-height: 40px;
                     clicked => {
                         settings-clicked();
                     }
@@ -633,9 +724,8 @@ export component MainScreen inherits Rectangle {
 
                         HorizontalBox {
                             spacing: 12px;
-                            if is_editing: Button {
+                            if is_editing: RoundedButton {
                                 text: "❌ Cancel";
-                                min-height: 48px;
                                 clicked => {
                                     is_editing = false;
                                     editing_leverage_id = "";
@@ -644,9 +734,8 @@ export component MainScreen inherits Rectangle {
                                     selected_data_stream_name = "";
                                 }
                             }
-                            Button {
+                            RoundedButton {
                                 text: is_editing ? "💾 Update Leverage" : "🚀 Create Leverage";
-                                min-height: 48px;
                                 enabled: selected_data_stream_id != "";
                                 clicked => {
                                     if is_editing {
