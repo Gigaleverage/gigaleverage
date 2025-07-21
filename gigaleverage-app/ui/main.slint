@@ -1,4 +1,4 @@
-import { Button, LineEdit, ScrollView, VerticalBox, HorizontalBox, GroupBox } from "std-widgets.slint";
+import { Button, ScrollView, VerticalBox, HorizontalBox, GroupBox } from "std-widgets.slint";
 // Import custom fonts (Plus Jakarta Sans family)
 import "../assets/fonts/PlusJakartaSans-Regular.ttf";
 import "../assets/fonts/PlusJakartaSans-Medium.ttf";
@@ -114,15 +114,17 @@ export component RoundedLineEdit inherits Rectangle {
     }
 
     // Internal text field
-    le := LineEdit {
+    le := TextInput {
         x: 10px;
         y: 0px;
         width: parent.width - 20px;
         height: parent.height;
-        placeholder-text: parent.placeholder;
+        vertical-alignment: center;
+        text: parent.text == "" ? parent.placeholder : parent.text;
+        color: parent.text == "" ? Theme.text-secondary : Theme.text-primary;
         font-size: 14px;
-        text <=> parent.text;
         edited => {
+            parent.text = self.text;
             parent.edited(self.text);
         }
     }
@@ -198,8 +200,11 @@ export component ApiKeyInput inherits Rectangle {
     background: Theme.background;
     HorizontalBox {
         alignment: center;
+
+        Rectangle { }
+
         VerticalBox {
-            max-width: 550px;
+            width: 550px;
             padding: 32px;
             spacing: 8px;
 
@@ -317,6 +322,8 @@ export component ApiKeyInput inherits Rectangle {
                 }
             }
         }
+
+        Rectangle { }
     }
 }
 
