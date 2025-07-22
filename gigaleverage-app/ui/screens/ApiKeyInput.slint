@@ -1,0 +1,137 @@
+import { HorizontalBox, VerticalBox } from "std-widgets.slint";
+import { Theme } from "../theme.slint";
+import { RoundedButton, RoundedLineEdit } from "../components.slint";
+
+export component ApiKeyInput inherits Rectangle {
+    callback api-keys-submitted(string, string);
+    property <string> openai-api-key;
+    property <string> coingecko-api-key;
+    background: Theme.background;
+    HorizontalBox {
+        alignment: center;
+
+        Rectangle { }
+
+        VerticalBox {
+            width: 550px;
+            padding: 32px;
+            spacing: 8px;
+
+            // Header
+            Text {
+                text: "🔑 Welcome to Gigaleverage";
+                font-size: 28px;
+                font-weight: 600;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+            }
+
+            // Sub-header
+            Text {
+                text: "Enter your API keys to get started";
+                font-size: 16px;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+            }
+
+            // Spacer between header and form fields
+            Rectangle {
+                height: 16px;
+            }
+
+            // OpenAI Key Field
+            HorizontalBox {
+                spacing: 8px;
+                Image {
+                    source: @image-url("../../assets/images/openai-logo.png");
+                    width: 24px;
+                    height: 24px;
+                    image-fit: contain;
+                }
+
+                Text {
+                    text: "OpenAI API Key";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+
+            RoundedLineEdit {
+                placeholder: "SK-...";
+                text <=> openai-api-key;
+            }
+
+            Text {
+                text: "Get key at https://platform.openai.com/account/api-keys → Create new secret key";
+                font-size: 12px;
+                wrap: word-wrap;
+                color: Theme.text-secondary;
+            }
+
+            // Spacer between form fields
+            Rectangle {
+                height: 16px;
+            }
+
+            // CoinGecko Key Field
+            HorizontalBox {
+                spacing: 8px;
+                Image {
+                    source: @image-url("../../assets/images/coingecko-logo.png");
+                    width: 24px;
+                    height: 24px;
+                    image-fit: contain;
+                }
+
+                Text {
+                    text: "CoinGecko API Key";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+
+            RoundedLineEdit {
+                placeholder: "••••••••";
+                text <=> coingecko-api-key;
+            }
+
+            Text {
+                text: "Generate key: log in at https://www.coingecko.com → API → Generate Key";
+                font-size: 12px;
+                wrap: word-wrap;
+                color: Theme.text-secondary;
+            }
+
+            // Spacer before action buttons
+            Rectangle {
+                min-height: 24px;
+            }
+            
+            // Action buttons
+            HorizontalBox {
+                spacing: 24px;
+                alignment: center;
+
+                RoundedButton {
+                    text: "⏭️ Skip for now";
+                    min-width: 150px;
+                    clicked => {
+                        api-keys-submitted("", "");
+                    }
+                }
+
+                RoundedButton {
+                    text: "✅ Continue";
+                    min-width: 150px;
+                    clicked => {
+                        api-keys-submitted(openai-api-key, coingecko-api-key);
+                    }
+                }
+            }
+        }
+
+        Rectangle { }
+    }
+}

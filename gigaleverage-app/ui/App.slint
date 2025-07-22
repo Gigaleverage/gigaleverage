@@ -1,0 +1,77 @@
+import { Button, ScrollView, VerticalBox, HorizontalBox, GroupBox } from "std-widgets.slint";
+import { Theme } from "theme.slint";
+import { RoundedButton, RoundedLineEdit } from "components.slint";
+import { Provider, DataStream, Leverage, Screen } from "types.slint";
+import { LoadingScreen } from "screens/LoadingScreen.slint";
+import { ApiKeyInput } from "screens/ApiKeyInput.slint";
+import { IntroScreen } from "screens/IntroScreen.slint";
+import { SettingsScreen } from "screens/SettingsScreen.slint";
+import { MainScreen } from "screens/MainScreen.slint";
+
+export component App inherits Window {
+    title: "Gigaleverage";
+    background: Theme.background;
+    min-width: 1000px;
+    min-height: 700px;
+    in-out property <Screen> current-screen: Screen.Loading;
+    property <string> api-key: "";
+    property <string> coingecko-api-key: "";
+    in-out property <[Leverage]> leverages: [];
+    in-out property <[Provider]> providers: [];
+    in-out property <[DataStream]> data_streams: [];
+
+    callback create-leverage(string, string, string);
+    callback provider-selected(string);
+    callback edit-leverage(string);
+    callback update-leverage(string, string, string, string);
+    callback delete-leverage(string);
+
+    if current-screen == Screen.Loading: LoadingScreen { }
+    if current-screen == Screen.ApiKeySetup: ApiKeyInput {
+        api-keys-submitted(oa_key, cg_key) => {
+            api-key = oa_key;
+            coingecko-api-key = cg_key;
+            current-screen = Screen.Intro;
+        }
+    }
+    if current-screen == Screen.Intro: IntroScreen {
+        continue-clicked => {
+            current-screen = Screen.Main;
+        }
+    }
+    if current-screen == Screen.Main: MainScreen {
+        leverages: root.leverages;
+        providers: root.providers;
+        data_streams: root.data_streams;
+
+        settings-clicked => {
+            current-screen = Screen.Settings;
+        }
+        provider-selected(provider_id) => {
+            root.provider-selected(provider_id);
+        }
+        create-leverage(provider_id, data_stream_id, data_stream_name) => {
+            root.create-leverage(provider_id, data_stream_id, data_stream_name);
+        }
+        edit-leverage(leverage_id) => {
+            root.edit-leverage(leverage_id);
+        }
+        update-leverage(leverage_id, provider_id, data_stream_id, data_stream_name) => {
+            root.update-leverage(leverage_id, provider_id, data_stream_id, data_stream_name);
+        }
+        delete-leverage(leverage_id) => {
+            root.delete-leverage(leverage_id);
+        }
+    }
+    if current-screen == Screen.Settings: SettingsScreen {
+        api-key-value: api-key;
+        api-key-changed(key) => {
+            api-key = key;
+        }
+        back-clicked => {
+            current-screen = Screen.Main;
+        }
+    }
+
+    default-font-family: "Plus Jakarta Sans";
+}

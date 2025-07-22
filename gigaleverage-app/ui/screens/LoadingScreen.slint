@@ -1,0 +1,65 @@
+import { VerticalBox, HorizontalBox } from "std-widgets.slint";
+import { Theme } from "../theme.slint";
+
+export component LoadingScreen inherits Rectangle {
+    background: Theme.background;
+    property <float> pulse-scale: 1.0;
+
+    // Pulse animation
+    animate pulse-scale {
+        duration: 1.5s;
+        easing: ease-in-out;
+        iteration-count: -1;
+    }
+    VerticalBox {
+        alignment: center;
+        HorizontalBox {
+            alignment: center;
+
+            VerticalBox {
+                alignment: center;
+                spacing: 40px;
+                Rectangle {
+                    width: 200px;
+                    height: 200px;
+                    Image {
+                        source: @image-url("../../assets/images/giga-logo-icon.svg");
+                        width: 100%;
+                        height: 100%;
+                        image-fit: contain;
+
+                        // Apply pulse animation
+                        animate opacity {
+                            duration: 1.5s;
+                            easing: ease-in-out;
+                            iteration-count: -1;
+                        }
+                    }
+                }
+
+                VerticalBox {
+                    spacing: 16px;
+                    Text {
+                        text: "Gigaleverage";
+                        font-size: 28px;
+                        font-weight: 700;
+                        color: Theme.text-primary;
+                        horizontal-alignment: center;
+                    }
+
+                    Text {
+                        text: "⚡ Loading...";
+                        font-size: 14px;
+                        color: Theme.primary;
+                        horizontal-alignment: center;
+                        animate opacity {
+                            duration: 1s;
+                            easing: ease-in-out;
+                            iteration-count: -1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

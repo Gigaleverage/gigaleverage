@@ -1,0 +1,166 @@
+import { ScrollView, HorizontalBox, VerticalBox } from "std-widgets.slint";
+import { Theme } from "../theme.slint";
+import { RoundedButton } from "../components.slint";
+
+export component IntroScreen inherits Rectangle {
+    callback continue-clicked();
+    background: Theme.background;
+
+    ScrollView {
+        HorizontalBox {
+            alignment: center;
+            VerticalBox {
+                padding: 48px;
+                spacing: 64px;
+
+                // Hero
+                VerticalBox {
+                    alignment: center;
+                    spacing: 12px;
+                    width: 100%;
+
+                    HorizontalBox {
+                        alignment: center;
+                        width: 100%;
+
+                        Rectangle {
+                            width: 96px;
+                            height: 96px;
+                            border-radius: 48px;
+                            // background: Theme.surface-hover;
+                            Image {
+                                source: @image-url("../../assets/images/giga-logo-icon.svg");
+                                width: 80px;
+                                height: 80px;
+                                image-fit: contain;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: "Gigaleverage";
+                        font-size: 40px;
+                        font-weight: 800;
+                        color: Theme.text-primary;
+                        horizontal-alignment: center;
+                    }
+
+                    Text {
+                        text: "AI-powered time-series insights & predictions";
+                        font-size: 16px;
+                        color: Theme.text-secondary;
+                        horizontal-alignment: center;
+                    }
+                }
+
+                HorizontalBox {
+                    alignment: center;
+                    spacing: 32px;
+
+                    Rectangle {
+                        width: 260px;
+                        border-radius: 18px;
+                        background: Theme.surface;
+                        border-width: 1px;
+                        border-color: Theme.surface-hover;
+                        VerticalBox {
+                            padding: 24px;
+                            spacing: 16px;
+                            alignment: start;
+                            Text {
+                                text: "📊";
+                                font-size: 28px;
+                            }
+
+                            Text {
+                                text: "Time Series Analysis";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+
+                            Text {
+                                text: "Visualize and explore complex time-series data to uncover patterns and trends.";
+                                font-size: 13px;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: 260px;
+                        border-radius: 18px;
+                        background: Theme.surface;
+                        border-width: 1px;
+                        border-color: Theme.surface-hover;
+                        VerticalBox {
+                            padding: 24px;
+                            spacing: 16px;
+                            alignment: start;
+                            Text {
+                                text: "🧠";
+                                font-size: 28px;
+                            }
+
+                            Text {
+                                text: "AI-Powered Sentiment";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+
+                            Text {
+                                text: "Gauge market mood with NLP-driven sentiment analysis for smarter decisions.";
+                                font-size: 13px;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: 260px;
+                        border-radius: 18px;
+                        background: Theme.surface;
+                        border-width: 1px;
+                        border-color: Theme.surface-hover;
+                        VerticalBox {
+                            padding: 24px;
+                            spacing: 16px;
+                            alignment: start;
+                            Text {
+                                text: "🚀";
+                                font-size: 28px;
+                            }
+
+                            Text {
+                                text: "Prediction Engine";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: Theme.text-primary;
+                            }
+
+                            Text {
+                                text: "Deploy state-of-the-art models to forecast future values with high precision.";
+                                font-size: 13px;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+                }
+
+                RoundedButton {
+                    text: "🎯 Get Started";
+                    min-width: 200px;
+                    clicked => {
+                        continue-clicked();
+                    }
+                }
+            }
+        }
+    }
+}

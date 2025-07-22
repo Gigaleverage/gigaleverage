@@ -1,0 +1,330 @@
+import { ScrollView, VerticalBox, HorizontalBox, GroupBox } from "std-widgets.slint";
+import { Theme } from "../theme.slint";
+import { RoundedButton, RoundedLineEdit } from "../components.slint";
+import { Leverage, Provider, DataStream } from "../types.slint";
+
+export component MainScreen inherits Rectangle {
+    callback settings-clicked();
+    callback provider-selected(string);
+    callback create-leverage(string, string, string);
+    callback edit-leverage(string);
+    callback update-leverage(string, string, string, string);
+    callback delete-leverage(string);
+
+    in property <[Leverage]> leverages;
+    in property <[Provider]> providers;
+    in property <[DataStream]> data_streams;
+    in-out property <string> selected_provider_id: "";
+    in-out property <string> selected_data_stream_id: "";
+    in-out property <string> selected_data_stream_name: "";
+    in-out property <string> editing_leverage_id: "";
+    in-out property <bool> is_editing: false;
+
+    background: Theme.background;
+    HorizontalBox {
+        Rectangle {
+            width: 280px;
+            background: Theme.surface;
+            border-radius: 15px;
+            VerticalBox {
+                padding: 20px;
+                spacing: 15px;
+
+                Text {
+                    text: "📊 Your Leverages";
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: Theme.accent;
+                    horizontal-alignment: center;
+                }
+
+                if leverages.length == 0: Rectangle {
+                    height: 100px;
+                    border-radius: 10px;
+                    background: Theme.background;
+                    border-width: 2px;
+                    border-color: Theme.surface-hover;
+                    VerticalBox {
+                        alignment: center;
+                        Text {
+                            text: "🎯";
+                            font-size: 24px;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: "No leverages yet";
+                            font-size: 12px;
+                            color: Theme.text-secondary;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: "Create your first one!";
+                            font-size: 10px;
+                            color: Theme.text-secondary;
+                            horizontal-alignment: center;
+                        }
+                    }
+                }
+
+                ScrollView {
+                    VerticalBox {
+                        spacing: 10px;
+                        for leverage in leverages: Rectangle {
+                            padding: 15px;
+                            border-radius: 10px;
+                            background: Theme.background;
+                            border-width: 1px;
+                            border-color: Theme.surface-hover;
+                            animate background {
+                                duration: 200ms;
+                                easing: ease-in-out;
+                            }
+
+                            VerticalBox {
+                                spacing: 8px;
+                                HorizontalBox {
+                                    Text {
+                                        text: "⚡ Leverage";
+                                        font-weight: 700;
+                                        color: Theme.accent;
+                                        font-size: 12px;
+                                    }
+
+                                    Rectangle { }
+
+                                    HorizontalBox {
+                                        spacing: 5px;
+                                        Rectangle {
+                                            width: 24px;
+                                            height: 24px;
+                                            border-radius: 12px;
+                                            background: Theme.surface-hover;
+                                            TouchArea {
+                                                clicked => {
+                                                    edit-leverage(leverage.id);
+                                                }
+                                            }
+
+                                            Text {
+                                                text: "✏️";
+                                                font-size: 10px;
+                                                horizontal-alignment: center;
+                                                vertical-alignment: center;
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            width: 24px;
+                                            height: 24px;
+                                            border-radius: 12px;
+                                            background: Theme.danger;
+                                            TouchArea {
+                                                clicked => {
+                                                    delete-leverage(leverage.id);
+                                                }
+                                            }
+
+                                            Text {
+                                                text: "🗑️";
+                                                font-size: 10px;
+                                                horizontal-alignment: center;
+                                                vertical-alignment: center;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: "🏢 " + leverage.provider.name;
+                                    color: Theme.text-secondary;
+                                    font-size: 11px;
+                                }
+
+                                Text {
+                                    text: "📈 " + leverage.data_stream.name;
+                                    color: Theme.text-secondary;
+                                    font-size: 11px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        VerticalBox {
+            padding: 32px;
+            spacing: 24px;
+            HorizontalBox {
+                spacing: 12px;
+                Text {
+                    text: "Gigaleverage";
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: Theme.text-primary;
+                    vertical-alignment: center;
+                }
+
+                Rectangle { }
+
+                RoundedButton {
+                    text: "⚙️ Settings";
+                    clicked => {
+                        settings-clicked();
+                    }
+                }
+            }
+
+            Rectangle {
+                border-radius: 15px;
+                background: Theme.surface;
+                padding: 20px;
+                VerticalBox {
+                    spacing: 20px;
+                    Text {
+                        text: is_editing ? "✏️ Edit Leverage" : "➕ Create New Leverage";
+                        font-size: 20px;
+                        font-weight: 600;
+                        color: Theme.text-primary;
+                    }
+
+                    Text {
+                        text: "🏢 Select a Data Provider";
+                        font-weight: 600;
+                        color: Theme.text-primary;
+                        font-size: 16px;
+                    }
+
+                    HorizontalBox {
+                        spacing: 15px;
+                        for provider in providers: Rectangle {
+                            border-width: 2px;
+                            border-color: selected_provider_id == provider.id ? Theme.accent : Theme.surface-hover;
+                            border-radius: 10px;
+                            background: selected_provider_id == provider.id ? Theme.accent : Theme.surface-hover;
+                            animate border-color {
+                                duration: 200ms;
+                                easing: ease-in-out;
+                            }
+                            animate background {
+                                duration: 200ms;
+                                easing: ease-in-out;
+                            }
+                            TouchArea {
+                                clicked => {
+                                    selected_provider_id = provider.id;
+                                    provider-selected(provider.id);
+                                }
+                            }
+
+                            HorizontalBox {
+                                padding: 15px;
+                                spacing: 10px;
+                                Image {
+                                    source: provider.logo;
+                                    width: 40px;
+                                    height: 40px;
+                                    image-fit: contain;
+                                }
+
+                                Text {
+                                    text: provider.name;
+                                    vertical-alignment: center;
+                                    color: selected_provider_id == provider.id ? Theme.background : Theme.text-primary;
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+                    }
+
+                    if selected_provider_id != "": VerticalBox {
+                        spacing: 15px;
+
+                        Text {
+                            text: "📊 Select Data Stream";
+                            font-weight: 600;
+                            color: Theme.text-primary;
+                            font-size: 16px;
+                        }
+
+                        ScrollView {
+                            height: 180px;
+                            VerticalBox {
+                                spacing: 8px;
+                                for stream in data_streams: Rectangle {
+                                    border-width: 1px;
+                                    border-color: selected_data_stream_id == stream.id ? Theme.accent : Theme.surface-hover;
+                                    border-radius: 8px;
+                                    background: selected_data_stream_id == stream.id ? Theme.accent : Theme.surface-hover;
+                                    animate border-color {
+                                        duration: 200ms;
+                                        easing: ease-in-out;
+                                    }
+                                    animate background {
+                                        duration: 200ms;
+                                        easing: ease-in-out;
+                                    }
+                                    TouchArea {
+                                        clicked => {
+                                            selected_data_stream_id = stream.id;
+                                            selected_data_stream_name = stream.name;
+                                        }
+                                    }
+
+                                    HorizontalBox {
+                                        padding: 12px;
+                                        spacing: 8px;
+                                        Text {
+                                            text: stream.id == "btc-price" ? "₿" : stream.id == "eth-price" ? "Ξ" : "📈";
+                                            font-size: 16px;
+                                            vertical-alignment: center;
+                                        }
+
+                                        Text {
+                                            text: stream.name;
+                                            color: selected_data_stream_id == stream.id ? Theme.background : Theme.text-primary;
+                                            font-weight: 500;
+                                            vertical-alignment: center;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        HorizontalBox {
+                            spacing: 12px;
+                            if is_editing: RoundedButton {
+                                text: "❌ Cancel";
+                                clicked => {
+                                    is_editing = false;
+                                    editing_leverage_id = "";
+                                    selected_provider_id = "";
+                                    selected_data_stream_id = "";
+                                    selected_data_stream_name = "";
+                                }
+                            }
+                            RoundedButton {
+                                text: is_editing ? "💾 Update Leverage" : "🚀 Create Leverage";
+                                enabled: selected_data_stream_id != "";
+                                clicked => {
+                                    if is_editing {
+                                        update-leverage(editing_leverage_id, selected_provider_id, selected_data_stream_id, selected_data_stream_name);
+                                        is_editing = false;
+                                        editing_leverage_id = "";
+                                    } else {
+                                        create-leverage(selected_provider_id, selected_data_stream_id, selected_data_stream_name);
+                                    }
+                                    selected_provider_id = "";
+                                    selected_data_stream_id = "";
+                                    selected_data_stream_name = "";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

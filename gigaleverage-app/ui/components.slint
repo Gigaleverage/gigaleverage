@@ -1,0 +1,77 @@
+import { Theme } from "theme.slint";
+
+export component RoundedButton inherits Rectangle {
+    in property <string> text;
+    in property <bool> enabled: true;
+
+    height: 48px;
+    border-radius: Theme.control-radius;
+    background: enabled ? Theme.button-background : Theme.surface-hover;
+    opacity: enabled ? 1.0 : 0.5;
+
+    ta := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            if enabled {
+                clicked();
+            }
+        }
+    }
+
+    states [
+        hover when ta.has-hover && enabled: {
+            background: Theme.button-background-hover;
+        }
+        pressed when ta.pressed && enabled: {
+            background: Theme.accent;
+        }
+    ]
+
+    animate background {
+        duration: 150ms;
+        easing: ease-in-out;
+    }
+
+    Text {
+        text: parent.text;
+        color: Theme.button-text;
+        font-weight: 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    callback clicked();
+}
+
+export component RoundedLineEdit inherits Rectangle {
+    in-out property <string> text: "";
+    in property <string> placeholder: "";
+
+    callback edited(string);
+
+    height: 40px;
+    border-radius: Theme.control-radius;
+    background: Theme.surface-hover;
+    border-width: 1px;
+    border-color: le.has-focus ? Theme.primary : Theme.surface-hover;
+
+    animate border-color {
+        duration: 150ms;
+        easing: ease-in-out;
+    }
+
+    le := TextInput {
+        x: 10px;
+        y: 0px;
+        width: parent.width - 20px;
+        height: parent.height;
+        vertical-alignment: center;
+        text: parent.text == "" ? parent.placeholder : parent.text;
+        color: parent.text == "" ? Theme.text-secondary : Theme.text-primary;
+        font-size: 14px;
+        edited => {
+            parent.text = self.text;
+            parent.edited(self.text);
+        }
+    }
+}

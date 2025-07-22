@@ -1,0 +1,24 @@
+export struct Provider {
+    id: string,
+    name: string,
+    logo: image,
+}
+
+export struct DataStream {
+    id: string,
+    name: string,
+}
+
+export struct Leverage {
+    id: string,
+    provider: Provider,
+    data_stream: DataStream,
+}
+
+export enum Screen {
+    Loading,
+    ApiKeySetup,
+    Intro,
+    Main,
+    Settings,
+} 

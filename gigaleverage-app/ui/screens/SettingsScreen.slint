@@ -1,0 +1,51 @@
+import { VerticalBox, HorizontalBox, GroupBox } from "std-widgets.slint";
+import { Theme } from "../theme.slint";
+import { RoundedButton, RoundedLineEdit } from "../components.slint";
+
+export component SettingsScreen inherits Rectangle {
+    callback api-key-changed(string);
+    callback back-clicked();
+    in property <string> api-key-value;
+    background: Theme.background;
+    VerticalBox {
+        padding: 32px;
+        spacing: 24px;
+        HorizontalBox {
+            spacing: 12px;
+            RoundedButton {
+                text: "⬅️ Back";
+                clicked => {
+                    back-clicked();
+                }
+            }
+
+            Text {
+                text: "⚙️ Settings";
+                font-size: 24px;
+                font-weight: 600;
+                color: Theme.text-primary;
+                vertical-alignment: center;
+            }
+        }
+
+        GroupBox {
+            title: "🔧 API Configuration";
+            VerticalBox {
+                spacing: 16px;
+                Text {
+                    text: "🔑 OpenAI API Key";
+                    font-size: 14px;
+                    color: Theme.text-secondary;
+                }
+
+                RoundedLineEdit {
+                    placeholder: "sk-...";
+                    text: api-key-value;
+                    edited => {
+                        api-key-changed(self.text);
+                    }
+                }
+            }
+        }
+    }
+}
